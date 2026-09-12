@@ -1,114 +1,164 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { ArrowDown, ArrowRight, Check, ChevronDown, Menu, Minus, Plus, ShoppingBag, Sparkles, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, Check, ChevronDown, Menu, Minus, Plus, ShoppingBag, X } from 'lucide-react'
 
-const memes = [
-  { id: 'm01', name: 'algorithmic damage', tier: 'COMMON BALL KNOWLEDGE', art: 'THE FEED NEVER ENDS' },
-  { id: 'm02', name: 'one more reel', tier: 'MID BALL KNOWLEDGE', art: 'ONE MORE REEL' },
-  { id: 'm03', name: 'camera roll evidence', tier: 'ELITE BALL KNOWLEDGE', art: 'DELETE NOTHING' },
-  { id: 'm04', name: 'bad decision club', tier: 'MID BALL KNOWLEDGE', art: 'GOOD OUTFIT THOUGH' },
-  { id: 'm05', name: 'offline pending', tier: 'ELITE BALL KNOWLEDGE', art: 'TOUCH GRASS LATER' },
-]
+type MemeTier = 'COMMON BALL KNOWLEDGE' | 'MID BALL KNOWLEDGE' | 'ELITE BALL KNOWLEDGE'
+type StockStatus = 'available' | 'out-of-stock' | 'not-configured'
+type PricingRule = 'general' | 'flat' | 'long-sleeve' | 'hoodie' | 'womens-round' | 'womens-crop'
 
-const products = [
-  { name: 'The Everyday Meme Tee', short: "Men's Round Neck", price: 449, gsm: '180 GSM', category: 'COMMON BALL KNOWLEDGE', color: '#f4c6e6', copy: 'Your everyday uniform for questionable internet decisions. A lighter-weight everyday tee built to carry your favorite HILOL memes without trying too hard.', sizes: ['S','M','L','XL'], tags: ['Bio-washed','Pre-shrunk','Multiple colors'] },
-  { name: 'The Slightly Extra V', short: "Men's V-Neck", price: 479, gsm: '180 GSM', category: 'MID BALL KNOWLEDGE', color: '#b9e8ff', copy: 'A meme, but slightly more V-neck than necessary. Easy everyday fit with the same HILOL brainrot.', sizes: ['S','M','L','XL','2XL'], tags: ['Same price through 2XL','Bio-washed'] },
-  { name: 'Internet Access Long Sleeve', short: "Men's Long Sleeve", price: 489, gsm: '180 GSM', category: 'MID BALL KNOWLEDGE', color: '#d7f36b', copy: "For when a normal meme tee isn't enough and your arms also need internet access.", sizes: ['S','M','L','XL'], tags: ['Long sleeve','Pre-shrunk'] },
-  { name: 'More Fabric, More Meme', short: 'Normal Oversized Tee', price: 549, gsm: '220 GSM', category: 'ELITE BALL KNOWLEDGE', color: '#ff9c83', copy: 'More fabric. More space for the meme. More streetwear energy.', sizes: ['S','M','L','XL','2XL'], tags: ['Boxy silhouette','Same price through 2XL'] },
-  { name: 'The Heavyweight Member', short: 'Premium Oversized Tee', price: 599, gsm: '240 GSM', category: 'ELITE BALL KNOWLEDGE', color: '#b9a7ff', copy: '240 GSM French Terry Loop Knit Unbrushed fabric meets HILOL brainrot. The heavyweight member of the family.', sizes: ['S','M','L','XL','2XL'], tags: ['240 GSM','100% combed cotton where applicable'] },
-  { name: 'Winter Mode Activated', short: 'Sweatshirt', price: 659, gsm: '320 GSM', category: 'MID BALL KNOWLEDGE', color: '#ffdf61', copy: 'Your meme just entered winter mode.', sizes: ['S','M','L','XL'], tags: ['320 GSM','Bio-washed','Pre-shrunk'] },
-  { name: 'Meme For Every Situation', short: 'Regular Hoodie', price: 759, gsm: '320 GSM', category: 'ELITE BALL KNOWLEDGE', color: '#96e0cf', copy: 'A hoodie for people who somehow have a meme for every situation.', sizes: ['S','M','L','XL'], tags: ['Matching drawstrings where applicable','320 GSM'] },
-  { name: 'Maximum Hoodie', short: 'Oversized Hoodie', price: 869, gsm: '320 GSM', category: 'ELITE BALL KNOWLEDGE', color: '#ffabcf', copy: 'Maximum hoodie. Maximum meme.', sizes: ['S','M','L','XL','2XL'], tags: ['Oversized fit','Same price through 2XL'] },
-  { name: 'No Meme. Just Vibes.', short: 'Joggers', price: 599, gsm: '240 GSM', category: 'PLAIN / NO MEMES', color: '#d8d8d8', copy: 'No meme.\nJust vibes.', sizes: ['S','M','L','XL','2XL'], tags: ['Plain joggers','No meme printing','Relaxed tapered silhouette'] },
-  { name: 'We Tried.', short: 'Shorts', price: 529, gsm: '240 GSM', category: 'PLAIN / NO MEMES', color: '#8ec6ff', copy: 'No meme here.\nWe tried.', sizes: ['S','M','L','XL','2XL'], tags: ['Plain shorts','No meme printing'] },
-  { name: 'Your Favorite Meme', short: "Women's Round Neck", price: 449, gsm: '180 GSM', category: 'COMMON BALL KNOWLEDGE', color: '#ffb27c', copy: 'Your favorite meme. Your fit.', sizes: ['S','M','L','XL'], tags: ['Everyday fit','Bio-washed where applicable'] },
-  { name: 'Smaller Canvas', short: "Women's Crop Top", price: 379, gsm: '180 GSM', category: 'MID BALL KNOWLEDGE', color: '#f4a2d0', copy: 'Smaller canvas.\nSame brainrot.', sizes: ['S','M','L','XL'], tags: ['Crop silhouette','Pre-shrunk where applicable'] },
-  { name: 'Full Internet Damage', short: "Women's Crop Hoodie", price: 699, gsm: '320 GSM', category: 'ELITE BALL KNOWLEDGE', color: '#a7d9ff', copy: 'Crop hoodie. Full internet damage.', sizes: ['S','M','L'], tags: ['320 GSM where applicable','Maximum size L'] },
-]
-
-function Sticker({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <span className={`sticker ${className}`}>{children}</span>
+type Meme = {
+  id: string
+  name: string
+  tier: MemeTier
+  artwork: string
+  licensing: 'ORIGINAL' | 'LICENSED' | 'PERMISSION_GRANTED' | 'REVIEW_REQUIRED'
 }
 
-function getPrice(product: typeof products[number], size: string) {
-  if (['Men\'s V-Neck', 'Normal Oversized Tee', 'Premium Oversized Tee', 'Oversized Hoodie', 'Joggers', 'Shorts', "Women's Crop Hoodie"].includes(product.short)) return product.price
-  if (product.short === "Men's Long Sleeve" || product.short === 'Regular Hoodie') return size === '2XL' ? product.price + 20 : product.price
-  if (product.short === "Women's Round Neck") return size === 'XL' ? product.price : size === '2XL' ? product.price + 10 : size === '3XL' ? product.price + 25 : size === '4XL' ? product.price + 45 : size === '5XL' ? product.price + 65 : product.price
-  if (product.short === "Women's Crop Top") return size === '2XL' ? product.price + 10 : product.price
-  const surcharge = { '2XL': 15, '3XL': 35, '4XL': 55, '5XL': 65 } as Record<string, number>
-  return product.price + (surcharge[size] ?? 0)
+type Variant = {
+  id: string
+  color: string
+  hex: string
+  sizes: string[]
+  stock: Record<string, StockStatus>
+  printroveProductId?: string
+  printroveVariantIds?: Record<string, string>
 }
 
-function ProductVisual({ product, large = false }: { product: typeof products[number]; large?: boolean }) {
-  return <div className={`product-visual ${large ? 'product-visual-large' : ''}`} style={{ background: product.color }}>
+type Garment = {
+  id: string
+  name: string
+  short: string
+  basePrice: number
+  gsm: string
+  description: string
+  fit: string
+  care: string
+  pricingRule: PricingRule
+  supportsMemes: boolean
+  variants: Variant[]
+  compatibleMemeIds: string[]
+}
+
+type CartItem = { garmentId: string; variantId: string; memeId?: string; size: string; quantity: number }
+
+const memes: Meme[] = [
+  { id: 'm01', name: 'one more reel', tier: 'COMMON BALL KNOWLEDGE', artwork: 'ONE MORE REEL', licensing: 'ORIGINAL' },
+  { id: 'm02', name: 'camera roll evidence', tier: 'MID BALL KNOWLEDGE', artwork: 'DELETE NOTHING', licensing: 'ORIGINAL' },
+  { id: 'm03', name: 'algorithmic damage', tier: 'MID BALL KNOWLEDGE', artwork: 'THE FEED NEVER ENDS', licensing: 'ORIGINAL' },
+  { id: 'm04', name: 'offline pending', tier: 'ELITE BALL KNOWLEDGE', artwork: 'TOUCH GRASS LATER', licensing: 'ORIGINAL' },
+  { id: 'm05', name: 'bad decision club', tier: 'ELITE BALL KNOWLEDGE', artwork: 'GOOD OUTFIT THOUGH', licensing: 'ORIGINAL' },
+]
+
+const commonVariant = (id: string, colors: [string, string][], sizes: string[]): Variant[] => colors.map(([color, hex], index) => ({
+  id: `${id}-color-${index + 1}`,
+  color,
+  hex,
+  sizes,
+  stock: Object.fromEntries(sizes.map((size) => [size, 'not-configured'])) as Record<string, StockStatus>,
+}))
+
+const productSeed: Array<Omit<Garment, 'variants' | 'compatibleMemeIds'> & { colors: [string, string][]; sizes: string[] }> = [
+  { id: 'mens-round-neck', name: 'The Everyday Meme Tee', short: "Men's Round Neck", basePrice: 449, gsm: '180 GSM', description: 'Your everyday uniform for questionable internet decisions. A lighter-weight tee built to carry a HILOL meme without trying too hard.', fit: 'Everyday fit', care: 'Wash inside out, cold. Do not iron directly on the print.', pricingRule: 'general', supportsMemes: true, colors: [['Black', '#111111'], ['White', '#f4f4f0']], sizes: ['S', 'M', 'L', 'XL'] },
+  { id: 'mens-v-neck', name: 'The Slightly Extra V', short: "Men's V-Neck", basePrice: 479, gsm: '180 GSM', description: 'A meme, but slightly more V-neck than necessary. Easy everyday fit with the same HILOL brainrot.', fit: 'Regular fit', care: 'Wash inside out, cold. Air dry when possible.', pricingRule: 'flat', supportsMemes: true, colors: [['Black', '#111111'], ['White', '#f4f4f0']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'mens-long-sleeve', name: 'Internet Access Long Sleeve', short: "Men's Long Sleeve", basePrice: 489, gsm: '180 GSM', description: "For when a normal meme tee isn't enough and your arms also need internet access.", fit: 'Regular fit', care: 'Wash inside out, cold. Avoid direct heat on print.', pricingRule: 'long-sleeve', supportsMemes: true, colors: [['Black', '#111111'], ['White', '#f4f4f0']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'normal-oversized-tee', name: 'More Fabric, More Meme', short: 'Normal Oversized Tee', basePrice: 549, gsm: '220 GSM', description: 'More fabric. More space for the meme. More streetwear energy.', fit: 'Boxy oversized silhouette', care: 'Wash inside out, cold. Lay flat to dry.', pricingRule: 'flat', supportsMemes: true, colors: [['Black', '#111111'], ['Bone', '#ded8c9']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'premium-oversized-tee', name: 'The Heavyweight Member', short: 'Premium Oversized Tee', basePrice: 599, gsm: '240 GSM', description: '240 GSM French Terry Loop Knit Unbrushed fabric meets HILOL brainrot. The heavyweight member of the family.', fit: 'Boxy oversized silhouette', care: 'Wash inside out, cold. Do not tumble dry hot.', pricingRule: 'flat', supportsMemes: true, colors: [['Black', '#111111'], ['Grey', '#777777']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'sweatshirt', name: 'Winter Mode Activated', short: 'Sweatshirt', basePrice: 659, gsm: '320 GSM', description: 'Your meme just entered winter mode.', fit: 'Relaxed fit', care: 'Wash inside out, cold. Air dry for best results.', pricingRule: 'general', supportsMemes: true, colors: [['Black', '#111111'], ['Grey', '#777777']], sizes: ['S', 'M', 'L', 'XL'] },
+  { id: 'regular-hoodie', name: 'Meme For Every Situation', short: 'Regular Hoodie', basePrice: 759, gsm: '320 GSM', description: 'A hoodie for people who somehow have a meme for every situation.', fit: 'Regular fit with matching drawstrings where applicable', care: 'Wash inside out, cold. Do not iron directly on the print.', pricingRule: 'hoodie', supportsMemes: true, colors: [['Black', '#111111'], ['Navy', '#1d2634']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'oversized-hoodie', name: 'Maximum Hoodie', short: 'Oversized Hoodie', basePrice: 869, gsm: '320 GSM', description: 'Maximum hoodie. Maximum meme.', fit: 'Oversized fit', care: 'Wash inside out, cold. Lay flat to dry.', pricingRule: 'flat', supportsMemes: true, colors: [['Black', '#111111'], ['Grey', '#777777']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'joggers', name: 'No Meme. Just Vibes.', short: 'Joggers', basePrice: 599, gsm: '240 GSM', description: 'No meme. Just vibes.', fit: 'Relaxed tapered silhouette with ribbed cuffs', care: 'Wash cold with similar colors.', pricingRule: 'flat', supportsMemes: false, colors: [['Black', '#111111'], ['Grey', '#777777']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'shorts', name: 'We Tried.', short: 'Shorts', basePrice: 529, gsm: '240 GSM', description: 'No meme here. We tried.', fit: 'Relaxed everyday fit', care: 'Wash cold with similar colors.', pricingRule: 'flat', supportsMemes: false, colors: [['Black', '#111111'], ['Grey', '#777777']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'womens-round-neck', name: 'Your Favorite Meme', short: "Women's Round Neck", basePrice: 449, gsm: '180 GSM', description: 'Your favorite meme. Your fit.', fit: 'Everyday fit', care: 'Wash inside out, cold. Air dry when possible.', pricingRule: 'womens-round', supportsMemes: true, colors: [['Black', '#111111'], ['White', '#f4f4f0']], sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'] },
+  { id: 'womens-crop-top', name: 'Smaller Canvas', short: "Women's Crop Top", basePrice: 379, gsm: '180 GSM', description: 'Smaller canvas. Same brainrot.', fit: 'Crop silhouette', care: 'Wash inside out, cold. Do not iron directly on the print.', pricingRule: 'womens-crop', supportsMemes: true, colors: [['Black', '#111111'], ['White', '#f4f4f0']], sizes: ['S', 'M', 'L', 'XL', '2XL'] },
+  { id: 'womens-crop-hoodie', name: 'Full Internet Damage', short: "Women's Crop Hoodie", basePrice: 699, gsm: '320 GSM', description: 'Crop hoodie. Full internet damage.', fit: 'Cropped hoodie fit', care: 'Wash inside out, cold. Air dry when possible.', pricingRule: 'flat', supportsMemes: true, colors: [['Black', '#111111'], ['Grey', '#777777']], sizes: ['S', 'M', 'L'] },
+]
+
+const garments: Garment[] = productSeed.map(({ colors, sizes, ...garment }) => ({ ...garment, variants: commonVariant(garment.id, colors, sizes), compatibleMemeIds: garment.supportsMemes ? memes.map((meme) => meme.id) : [] }))
+
+function priceFor(garment: Garment, size: string) {
+  if (garment.pricingRule === 'flat' || garment.pricingRule === 'womens-crop') return garment.basePrice
+  if (garment.pricingRule === 'long-sleeve' || garment.pricingRule === 'hoodie') return garment.basePrice + (size === '2XL' ? 20 : 0)
+  if (garment.pricingRule === 'womens-round') return garment.basePrice + ({ '2XL': 10, '3XL': 35, '4XL': 80, '5XL': 145 }[size] ?? 0)
+  return garment.basePrice + ({ '2XL': 15, '3XL': 35, '4XL': 55, '5XL': 65 }[size] ?? 0)
+}
+
+function findGarment(id: string) { return garments.find((garment) => garment.id === id) ?? garments[0] }
+function findMeme(id?: string) { return memes.find((meme) => meme.id === id) }
+
+function ProductVisual({ garment, variant, meme, large = false }: { garment: Garment; variant: Variant; meme?: Meme; large?: boolean }) {
+  return <div className={`product-visual ${large ? 'product-visual-large' : ''}`} style={{ background: variant.hex }}>
     <div className="visual-noise" />
     <span className="visual-brand">hi lol.</span>
-    <span className="visual-meme">{product.short === 'Joggers' || product.short === 'Shorts' ? 'NO MEME' : 'very online'}</span>
-    <div className="tee-shape"><div className="tee-neck" /><div className="tee-print">LOL<br /><small>IRL</small></div></div>
-    <span className="visual-label">{product.gsm}</span>
+    <span className="visual-meme">{meme?.artwork ?? (garment.supportsMemes ? 'SELECT A MEME' : 'PLAIN / NO MEME')}</span>
+    <div className="tee-shape"><div className="tee-neck" /><div className="tee-print">{meme ? meme.artwork.split(' ')[0] : 'LOL'}<br /><small>{meme ? 'IRL' : 'WEAR'}</small></div></div>
+    <span className="visual-label">{garment.gsm} / {variant.color}</span>
   </div>
 }
 
 export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
-  const [selected, setSelected] = useState<typeof products[number] | null>(null)
-  const [selectedMeme, setSelectedMeme] = useState(memes[0])
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedVariantId, setSelectedVariantId] = useState('')
+  const [selectedMemeId, setSelectedMemeId] = useState<string | undefined>(memes[0].id)
   const [selectedSize, setSelectedSize] = useState('S')
-  const [cart, setCart] = useState<{ product: typeof products[number]; size: string; qty: number }[]>([])
-  const [level, setLevel] = useState('MID BALL KNOWLEDGE')
-  const [damage, setDamage] = useState(72)
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [level, setLevel] = useState<MemeTier>('MID BALL KNOWLEDGE')
   const [faq, setFaq] = useState<number | null>(null)
-  const total = useMemo(() => cart.reduce((sum, item) => sum + getPrice(item.product, item.size) * item.qty, 0), [cart])
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [orderPlaced, setOrderPlaced] = useState(false)
 
-  function add(product: typeof products[number], size = product.sizes[0]) {
+  const selected = selectedId ? findGarment(selectedId) : null
+  const selectedVariant = selected?.variants.find((variant) => variant.id === selectedVariantId) ?? selected?.variants[0]
+  const selectedMeme = findMeme(selectedMemeId)
+  const cartTotal = useMemo(() => cart.reduce((total, item) => { const garment = findGarment(item.garmentId); return total + priceFor(garment, item.size) * item.quantity }, 0), [cart])
+
+  function openProduct(garment: Garment) {
+    setSelectedId(garment.id)
+    setSelectedVariantId(garment.variants[0].id)
+    setSelectedSize(garment.variants[0].sizes[0])
+    setSelectedMemeId(garment.supportsMemes ? garment.compatibleMemeIds[0] : undefined)
+  }
+
+  function addToCart() {
+    if (!selected || !selectedVariant) return
+    const key = `${selected.id}:${selectedVariant.id}:${selectedSize}:${selectedMemeId ?? 'plain'}`
     setCart((items) => {
-      const found = items.find((item) => item.product.name === product.name && item.size === size)
-      return found ? items.map((item) => item === found ? { ...item, qty: item.qty + 1 } : item) : [...items, { product, size, qty: 1 }]
+      const existing = items.find((item) => `${item.garmentId}:${item.variantId}:${item.size}:${item.memeId ?? 'plain'}` === key)
+      return existing ? items.map((item) => item === existing ? { ...item, quantity: item.quantity + 1 } : item) : [...items, { garmentId: selected.id, variantId: selectedVariant.id, size: selectedSize, memeId: selectedMemeId, quantity: 1 }]
     })
-    setSelected(null)
+    setSelectedId(null)
     setCartOpen(true)
   }
 
+  function changeQuantity(index: number, delta: number) { setCart((items) => items.flatMap((item, itemIndex) => itemIndex === index ? (item.quantity + delta > 0 ? [{ ...item, quantity: item.quantity + delta }] : []) : [item])) }
+
   return <main className="site-shell">
-    <div className="top-strip"><span>SHIPPING INCLUDED</span><span className="top-dots">HILOL / 2026</span><span>MADE WHEN YOU ORDER</span></div>
-    <header className="site-nav">
-      <button className="menu-button" aria-label="Open menu" onClick={() => setMenuOpen(true)}><Menu size={22} /></button>
-      <a className="logo" href="#top">hi lol<span>.</span></a>
-      <nav className="desktop-nav">{['SHOP','MEMES','OVERSIZED','HOODIES','WOMEN','ABOUT'].map((item) => <a key={item} href={item === 'SHOP' ? '#shop' : `#${item.toLowerCase()}`}>{item}</a>)}</nav>
-      <div className="nav-actions"><a href="/track" className="track-link">TRACK ORDER</a><button className="cart-button" onClick={() => setCartOpen(true)} aria-label={`Cart with ${cart.length} items`}><ShoppingBag size={19} /><span>{cart.reduce((n, i) => n + i.qty, 0)}</span></button></div>
-    </header>
+    <div className="top-strip"><span>SHIPPING INCLUDED</span><span>HILOL / 2026</span><span>MADE WHEN YOU ORDER</span></div>
+    <header className="site-nav"><button className="menu-button" aria-label="Open menu" onClick={() => setMenuOpen(true)}><Menu size={22} /></button><a className="logo" href="#top">hi lol<span>.</span></a><nav className="desktop-nav">{['SHOP', 'MEMES', 'OVERSIZED', 'HOODIES', 'WOMEN', 'ABOUT'].map((item) => <a key={item} href={item === 'SHOP' ? '#shop' : `#${item.toLowerCase()}`}>{item}</a>)}</nav><div className="nav-actions"><a href="/track" className="track-link">TRACK ORDER</a><button className="cart-button" onClick={() => setCartOpen(true)} aria-label="Open cart"><ShoppingBag size={19} /><span>{cart.reduce((total, item) => total + item.quantity, 0)}</span></button></div></header>
+    <div className={`mobile-menu ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}><button className="close-button" onClick={() => setMenuOpen(false)} aria-label="Close menu"><X /></button><span className="menu-kicker">THE MENU, BUT MAKE IT LOUD</span>{['SHOP', 'MEMES', 'OVERSIZED', 'HOODIES', 'WOMEN', 'ABOUT'].map((item, index) => <a key={item} href={item === 'SHOP' ? '#shop' : `#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}><b>0{index + 1}</b>{item}<ArrowRight /></a>)}<a className="menu-track" href="/track">TRACK ORDER <ArrowRight /></a></div>
 
-    {menuOpen && <div className="mobile-menu"><button className="close-button" onClick={() => setMenuOpen(false)}><X /></button><span className="menu-kicker">THE MENU, BUT MAKE IT LOUD</span>{['SHOP','MEMES','OVERSIZED','HOODIES','WOMEN','ABOUT'].map((item, i) => <a key={item} href={item === 'SHOP' ? '#shop' : `#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}><b>0{i + 1}</b>{item}<ArrowRight /></a>)}<a className="menu-track" href="/track">TRACK ORDER <ArrowRight /></a></div>}
+    <section id="top" className="hero-section"><div className="hero-copy"><span className="sticker sticker-top">INDIAN INTERNET WEAR</span><h1>hi<br /><span>lol.</span></h1><p className="hero-tagline">wear your humor.</p><p className="hero-sub">you were going to scroll anyway. make it a fit.</p><div className="hero-actions"><a className="button button-black" href="#shop">SHOP MEMES <ArrowRight size={17} /></a><a className="scroll-link" href="#brainrot">SCROLL THE BRAINROT <ArrowDown size={16} /></a></div></div><div className="hero-art"><img className="hero-logo-art" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-91D4A420-8u3fJrx4Cergsnc8JBf0C0eBIQpZUm.jpeg" alt="hi lol. wear your humor." /><div className="hero-shirt"><div className="tee-neck" /><div className="tee-print">BRB<br /><small>BEING<br />ICONIC</small></div></div><span className="sticker sticker-corner">100%<br />UNSERIOUS</span></div><div className="hero-bottom"><span>SCROLL IF YOU DARE</span><span>↓</span><span>EST. 2026 / INDIA</span></div></section>
+    <div className="static-strip">WEAR YOUR HUMOR <span>+</span> WEAR YOUR HUMOR <span>+</span> WEAR YOUR HUMOR</div>
 
-    <section id="top" className="hero-section">
-      <div className="hero-copy"><Sticker className="sticker-top">INDIAN INTERNET WEAR</Sticker><h1>hi<br /><span>lol.</span></h1><p className="hero-tagline">wear your humor.</p><p className="hero-sub">you already spent 6 hours looking at memes today.<br />might as well wear one.</p><div className="hero-actions"><a className="button button-black" href="#shop">SHOP MEMES <ArrowRight size={17} /></a><a className="scroll-link" href="#brainrot">SCROLL THE BRAINROT <ArrowDown size={16} /></a></div></div>
-      <div className="hero-art"><img className="hero-logo-art" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-91D4A420-8u3fJrx4Cergsnc8JBf0C0eBIQpZUm.jpeg" alt="hi lol. wear your humor." /><div className="scribble">LOL<br />IRL</div><div className="hero-shirt"><div className="tee-neck" /><div className="tee-print">BRB<br /><small>BEING<br />ICONIC</small></div></div><Sticker className="sticker-corner">100%<br />UNSERIOUS</Sticker><span className="hero-star">+</span><span className="hero-arrow">↘</span></div>
-      <div className="hero-bottom"><span>SCROLL IF YOU DARE</span><span>↓</span><span>EST. 2026 / INDIA</span></div>
-    </section>
+    <section id="brainrot" className="brainrot-section section-pad"><div className="section-head"><span className="eyebrow">01 / ENTER THE UNIVERSE</span><h2>SHOP THE<br /><em>BRAINROT</em></h2><p>not a catalog. a personality test with sleeves.</p></div><div className="level-switcher">{(['COMMON BALL KNOWLEDGE', 'MID BALL KNOWLEDGE', 'ELITE BALL KNOWLEDGE'] as MemeTier[]).map((item, index) => <button className={level === item ? 'active' : ''} key={item} onClick={() => setLevel(item)}><span>0{index + 1}</span>{item}<small>{index === 0 ? 'you have definitely seen this.' : index === 1 ? 'the group chat has lore.' : 'touch grass is a rumour.'}</small></button>)}</div></section>
 
-    <div className="marquee marquee-yellow"><div>WEAR YOUR HUMOR <span>+</span> WEAR YOUR HUMOR <span>+</span> WEAR YOUR HUMOR <span>+</span> WEAR YOUR HUMOR <span>+</span></div></div>
+    <section id="shop" className="featured-section section-pad"><div className="section-head row-head"><div><span className="eyebrow">02 / THE DROP</span><h2>FRESH <em>FROM<br />THE GROUP CHAT</em></h2></div><span className="text-link">13 GARMENTS <ArrowRight size={16} /></span></div><div className="product-grid">{garments.map((garment, index) => <article className="product-card" key={garment.id} onClick={() => openProduct(garment)}><div className="product-number">{String(index + 1).padStart(2, '0')}</div><ProductVisual garment={garment} variant={garment.variants[0]} meme={garment.supportsMemes ? memes[0] : undefined} /><div className="product-info"><div><span className="product-category">{garment.short}</span><h3>{garment.name}</h3></div><strong>₹{garment.basePrice}</strong></div><div className="product-hover">OPEN GARMENT <ArrowRight size={17} /></div></article>)}</div></section>
 
-    <section id="brainrot" className="brainrot-section section-pad"><div className="section-head"><span className="eyebrow">01 / ENTER THE UNIVERSE</span><h2>SHOP THE<br /><em>BRAINROT</em></h2><p>not a catalog. a personality test with sleeves.</p></div><div className="level-switcher">{['COMMON BALL KNOWLEDGE','MID BALL KNOWLEDGE','ELITE BALL KNOWLEDGE'].map((item, i) => <button className={level === item ? 'active' : ''} key={item} onClick={() => setLevel(item)}><span>0{i + 1}</span>{item}<small>{i === 0 ? "You've definitely seen this." : i === 1 ? "You've spent enough time online." : '18 hours of doomscrolling required.'}</small></button>)}</div><div className="level-result"><div className="result-stamp">{level === 'COMMON BALL KNOWLEDGE' ? 'recognisable, still funny' : level === 'MID BALL KNOWLEDGE' ? 'chronically online' : 'touch grass is a rumour'}</div><p>{level === 'COMMON BALL KNOWLEDGE' ? 'The gateway meme. Recognisable, wearable, still funny.' : level === 'MID BALL KNOWLEDGE' ? 'The sweet spot. Your group chat has lore.' : 'For the ones who reference a meme in a work meeting.'}</p><ArrowRight /></div></section>
+    <section id="oversized" className="fit-section"><div className="fit-copy"><span className="eyebrow">03 / FIT CHECK</span><h2>WHICH<br /><em>FIT ARE<br />YOU?</em></h2><p>There is no wrong answer. Except polo. We do not do polo.</p><a className="button button-yellow" href="#shop">FIND YOUR GARMENT <ArrowRight size={16} /></a></div><div className="fit-art"><div className="fit-circle">{level === 'COMMON BALL KNOWLEDGE' ? '01' : level === 'MID BALL KNOWLEDGE' ? '02' : '03'}<small>{level.split(' ')[0]}</small></div><p className="fit-note">the tier belongs to the meme, not the price.</p></div></section>
 
-    <section id="shop" className="featured-section section-pad"><div className="section-head row-head"><div><span className="eyebrow">02 / THE DROP</span><h2>FRESH <em>FROM<br />THE GROUP CHAT</em></h2></div><a href="#all-products" className="text-link">SEE ALL 13 <ArrowRight size={16} /></a></div><div className="product-scroller">{products.slice(0, 5).map((product, i) => <article className="product-card" key={product.name} onClick={() => setSelected(product)}><div className="product-number">0{i + 1}</div><ProductVisual product={product} /><div className="product-info"><div><span className="product-category">{product.category}</span><h3>{product.name}</h3></div><strong>₹{product.price}</strong></div><div className="product-hover">TAP TO<br />UNLOCK <ArrowRight size={17} /></div></article>)}</div></section>
+    <section id="hoodies" className="quality-section section-pad"><div className="quality-title"><span className="eyebrow">04 / RECEIPTS</span><h2>WHY THE<br /><em>FUCK IS IT<br />THIS PRICE?</em></h2></div><div className="quality-grid"><div className="quality-intro"><p>Because good basics should not require a financial crisis. Every retail price includes shipping. GST is included where applicable. No invented fees.</p><a href="#quality-details" className="button button-yellow">THE RECEIPTS <ArrowDown size={16} /></a></div><div id="quality-details" className="gsm-card"><span>FABRIC WEIGHT</span><div className="gsm-list"><div><b>180</b><small>GSM / EVERYDAY</small></div><div><b>220</b><small>GSM / OVERSIZED</small></div><div className="gsm-heavy"><b>240</b><small>GSM / PREMIUM</small></div><div><b>320</b><small>GSM / FLEECE</small></div></div></div><div className="detail-list"><div><b>PRINT</b><span>Water-based, toxin-free, non-hazardous inks where configured for the selected product.</span></div><div><b>FEEL</b><span>Bio-washing uses enzymes to remove loose surface fibers and improve softness where applicable.</span></div><div><b>CARE</b><span>Pre-shrunk construction helps reduce shrinkage. Follow the garment care instructions.</span></div><div><b>FULFILLMENT</b><span>Printed on demand. Made when you order. Shipped to you.</span></div></div></div></section>
 
-    <section id="oversized" className="fit-section"><div className="fit-copy"><span className="eyebrow">03 / FIT CHECK</span><h2>WHICH<br /><em>FIT ARE<br />YOU?</em></h2><p>There is no wrong answer. Except polo. We don't do polo.</p><div className="fit-options"><button className="active">I LIKE IT NORMAL</button><button>I LIKE IT LOUD</button><button>I AM THE MEME</button></div></div><div className="fit-art"><div className="fit-circle">{damage}%<small>ONLINE</small></div><label htmlFor="damage">RATE YOUR INTERNET DAMAGE</label><input id="damage" type="range" min="0" max="100" value={damage} onChange={(e) => setDamage(Number(e.target.value))} /><div className="fit-ticks"><span>touches grass</span><span>no thoughts</span><span>terminally online</span></div></div></section>
+    <section id="women" className="meme-strip-section"><div className="strip-title"><span>05 / DISCOVER</span><h2>THE MEME<br /><em>IS THE PRODUCT</em></h2></div><div className="meme-grid">{memes.map((meme) => <button className="meme-tile" key={meme.id} onClick={() => { const garment = garments.find((item) => item.supportsMemes); if (garment) { openProduct(garment); setSelectedMemeId(meme.id) } }}><span>{meme.id.toUpperCase()}</span><b>{meme.artwork}</b><small>{meme.tier.toLowerCase()} / original artwork</small></button>)}</div></section>
 
-    <section id="hoodies" className="quality-section section-pad"><div className="quality-title"><span className="eyebrow">04 / RECEIPTS</span><h2>WHY THE<br /><em>FUCK IS IT<br />THIS PRICE?</em></h2><Sticker>NO MARKETING<br />FLUFF</Sticker></div><div className="quality-grid"><div className="quality-intro"><p>Because good basics should not require a financial crisis. We make when you order, keep the middlemen weirdly minimal, and tell you exactly what you are getting.</p><a href="#quality-details" className="button button-yellow">THE RECEIPTS <ArrowDown size={16} /></a></div><div id="quality-details" className="gsm-card"><span>FABRIC WEIGHT</span><div className="gsm-list"><div><b>180</b><small>GSM / EVERYDAY</small></div><div><b>220</b><small>GSM / OVERSIZED</small></div><div className="gsm-heavy"><b>240</b><small>GSM / PREMIUM</small></div><div><b>320</b><small>GSM / FLEECE</small></div></div></div><div className="detail-list"><div><b>PRINT</b><span>Water-based, toxin-free, non-hazardous inks. Epson UltraChrome DG inks where applicable.</span></div><div><b>FEEL</b><span>Bio-washing uses enzymes to remove loose surface fibers and improve softness.</span></div><div><b>FIT</b><span>Pre-shrunk construction helps reduce shrinkage during washing.</span></div><div><b>FULFILLMENT</b><span>Printed on demand. Made when you order. Shipped to you.</span></div></div></div></section>
+    <section className="faq-section section-pad"><div className="section-head"><span className="eyebrow">06 / IMPORTANT BUT FUN</span><h2>FAQ, BUT<br /><em>MAKE IT LOUD</em></h2></div>{['Is shipping actually included?', 'How does made-to-order work?', 'Can I cancel my order?', 'What if something arrives wrong?'].map((question, index) => <div className="faq-row" key={question}><button onClick={() => setFaq(faq === index ? null : index)}><span>0{index + 1}</span><b>{question}</b>{faq === index ? <Minus /> : <Plus />}</button><div className={`faq-answer ${faq === index ? 'is-open' : ''}`}><p>{index === 0 ? 'Yes. The displayed retail price includes shipping. No surprise shipping line appears later.' : index === 1 ? 'Your selected garment and meme are made after the order is accepted. Supplier fulfillment will be connected later.' : index === 2 ? 'Cancellations can be requested within 6 hours. After that, production may have started.' : 'Contact support with your order details and clear photos where appropriate.'}</p></div></div>)}</section>
 
-    <section id="women" className="meme-strip-section"><div className="strip-title"><span>05 / DISCOVER</span><h2>THE MEME<br /><em>IS THE PRODUCT</em></h2></div><div className="meme-scroller">{['very demure','it is what it is','main character','no thoughts','delulu is the solulu'].map((text, i) => <div className="meme-tile" key={text} style={{ transform: `rotate(${i % 2 ? 3 : -3}deg)` }}><span>{i % 2 ? '+' : 'lol'}</span><b>{text}</b><small>wear this if your screen time is a personality trait.</small></div>)}</div></section>
+    <section className="final-cta"><h2>YEAH, YOU<br /><em>NEED THIS.</em></h2><a className="button button-yellow" href="#shop">FIX YOUR WARDROBE <ArrowRight size={17} /></a><span className="final-small">or do not. stay boring.</span></section>
+    <footer className="site-footer"><div className="footer-brand"><a className="logo" href="#top">hi lol<span>.</span></a><p>wear your humor.</p><span className="footer-note">made with questionable decisions in india.</span></div><div className="footer-links"><div><b>SHOP</b><a href="#shop">All garments</a><a href="#oversized">Oversized</a><a href="#hoodies">Hoodies</a><a href="#women">Memes</a></div><div><b>HELP</b><a href="/track">Track order</a><a href="/support">Support</a><a href="/refund">Refunds</a><a href="/cancellation">Cancellation</a></div><div><b>LEGAL</b><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/shipping">Shipping</a></div></div><div className="footer-bottom"><span>© 2026 hi lol</span><a href="https://instagram.com/hilolwear" target="_blank" rel="noreferrer">INSTAGRAM</a></div></footer>
 
-    <section className="reviews-section section-pad"><div className="section-head"><span className="eyebrow">06 / REAL PEOPLE ONLY</span><h2>THEY SAID<br /><em>WHAT?</em></h2></div><div className="empty-review"><span className="review-stars">NO REVIEWS YET</span><h3>Nobody has reviewed this yet.</h3><p>Be the first victim.</p><button className="button button-black" onClick={() => setSelected(products[0])}>WEAR IT FIRST <ArrowRight size={16} /></button></div></section>
-
-    <section className="faq-section section-pad"><div className="section-head"><span className="eyebrow">07 / IMPORTANT BUT FUN</span><h2>FAQ, BUT<br /><em>MAKE IT LOUD</em></h2></div>{['Is shipping actually included?', 'How does made-to-order work?', 'Can I cancel my order?', 'What if something arrives wrong?'].map((q, i) => <div className="faq-row" key={q}><button onClick={() => setFaq(faq === i ? null : i)}><span>0{i + 1}</span><b>{q}</b>{faq === i ? <Minus /> : <Plus />}</button>{faq === i && <p>{i === 0 ? 'Yes. The price you see is the product price with shipping included. No surprise fees.' : i === 1 ? 'We print and prepare your selected design after you order. It helps us avoid overproduction.' : i === 2 ? 'Cancellations are available within 6 hours of placing your order. After that window, we may have already started preparing your made-to-order item.' : 'Talk to the humans behind the memes through support and include photos where appropriate.'}</p>}</div>)}</section>
-
-    <section className="final-cta"><span className="final-doodle">+</span><h2>YEAH, YOU<br /><em>NEED THIS.</em></h2><a className="button button-yellow" href="#shop">FIX YOUR WARDROBE <ArrowRight size={17} /></a><span className="final-small">or don't. stay boring.</span></section>
-
-    <footer className="site-footer"><div className="footer-brand"><a className="logo" href="#top">hi lol<span>.</span></a><p>wear your humor.</p><span className="footer-note">made with questionable decisions in india.</span></div><div className="footer-links"><div><b>SHOP</b><a href="#shop">All memes</a><a href="#oversized">Oversized</a><a href="#hoodies">Hoodies</a><a href="#women">Women</a></div><div><b>HELP</b><a href="/track">Track order</a><a href="/support">Support</a><a href="/refund-policy">Refunds</a><a href="/cancellation-policy">Cancellation</a></div><div><b>LEGAL</b><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="#quality-details">Quality</a></div></div><div className="footer-bottom"><span>© 2026 hi lol</span><span>INSTAGRAM ↗</span></div></footer>
-
-    {selected && <div className="modal-backdrop" onClick={() => setSelected(null)}><div className="product-modal" onClick={(e) => e.stopPropagation()}><button className="modal-close" onClick={() => setSelected(null)}><X /></button><ProductVisual product={selected} large /><div className="modal-content"><span className="product-category">{selected.category}</span><h2>{selected.name}</h2><div className="meme-picker"><div className="meme-picker-head"><span>CHOOSE YOUR MEME</span><b>{selectedMeme.tier}</b></div><div className="meme-picker-grid">{(selected.short === 'Joggers' || selected.short === 'Shorts' ? [] : memes).map((meme) => <button key={meme.id} className={selectedMeme.id === meme.id ? 'selected' : ''} onClick={() => setSelectedMeme(meme)}><span>{meme.id.toUpperCase()}</span><strong>{meme.art}</strong></button>)}</div></div><p className="wear-this">wear this if...</p><p>{selected.copy}</p><div className="modal-tabs"><span className="active">THE FIT</span><span>THE FABRIC</span><span>THE MEME</span></div><div className="modal-meta"><span>{selected.gsm}</span><span>SHIPPING INCLUDED</span><strong>₹{selected.price}</strong></div><div className="size-row"><span>CHOOSE SIZE</span>{selected.sizes.map((size) => <button key={size} className={selectedSize === size ? 'selected' : ''} onClick={() => setSelectedSize(size)}>{size}</button>)}</div><div className="live-price"><span>SHIPPING INCLUDED / GST INCLUDED</span><strong>₹{getPrice(selected, selectedSize)}</strong></div><button className="button button-black full" onClick={() => add(selected, selectedSize)}>YEAH, ADD TO CART <ArrowRight size={17} /></button></div></div></div>}
-    {cartOpen && <div className="cart-drawer-wrap" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="drawer-head"><span>YOUR CART ({cart.reduce((n, i) => n + i.qty, 0)})</span><button onClick={() => setCartOpen(false)}><X /></button></div>{cart.length === 0 ? <div className="empty-cart"><span className="cart-face">EMPTY / FOR NOW</span><h2>bro...<br />you left the<br /><em>cart empty.</em></h2><button className="button button-black" onClick={() => setCartOpen(false)}>FIX THAT <ArrowRight size={16} /></button></div> : <><div className="cart-items">{cart.map((item) => <div className="cart-item" key={`${item.product.name}-${item.size}`}><div className="cart-thumb" style={{ background: item.product.color }}><span>LOL</span></div><div className="cart-item-copy"><b>{item.product.name}</b><small>{item.size} / SHIPPING INCLUDED</small><div className="qty"><button onClick={() => setCart((items) => items.map((x) => x === item ? { ...x, qty: Math.max(0, x.qty - 1) } : x).filter((x) => x.qty))}><Minus size={13} /></button>{item.qty}<button onClick={() => setCart((items) => items.map((x) => x === item ? { ...x, qty: x.qty + 1 } : x))}><Plus size={13} /></button></div></div><strong>₹{getPrice(item.product, item.size) * item.qty}</strong></div>)}</div><div className="cart-summary"><div><span>SUBTOTAL</span><b>₹{total}</b></div><p>shipping included. always.</p><button className="button button-yellow full">CHECKOUT <ArrowRight size={17} /></button></div></>}</aside></div>}
+    {selected && selectedVariant && <div className="modal-backdrop" onClick={() => setSelectedId(null)}><div className="product-modal" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setSelectedId(null)} aria-label="Close product"><X /></button><ProductVisual garment={selected} variant={selectedVariant} meme={selectedMeme} large /><div className="modal-content"><span className="product-category">{selected.short}</span><h2>{selected.name}</h2><p className="wear-this">wear this if...</p><p>{selected.description}</p>{selected.supportsMemes && <div className="meme-picker"><div className="meme-picker-head"><span>CHOOSE YOUR MEME</span><b>{selectedMeme?.tier}</b></div><div className="meme-picker-grid">{selected.compatibleMemeIds.map((id) => { const meme = findMeme(id)!; return <button key={id} className={selectedMemeId === id ? 'selected' : ''} onClick={() => setSelectedMemeId(id)}><span>{meme.id.toUpperCase()}</span><strong>{meme.artwork}</strong></button> })}</div></div>}<div className="option-block"><span>COLOR / PRINTROVE READY</span><div className="color-row">{selected.variants.map((variant) => <button key={variant.id} className={selectedVariant.id === variant.id ? 'selected' : ''} onClick={() => setSelectedVariantId(variant.id)}><i style={{ background: variant.hex }} />{variant.color}<small>{variant.stock[selectedSize] === 'out-of-stock' ? 'OUT OF STOCK' : 'STOCK CONFIGURABLE'}</small></button>)}</div></div><div className="option-block"><span>CHOOSE SIZE</span><div className="size-row">{selectedVariant.sizes.map((size) => <button key={size} className={selectedSize === size ? 'selected' : ''} onClick={() => setSelectedSize(size)}>{size}</button>)}</div></div><div className="product-facts"><span>{selected.gsm}</span><span>SHIPPING INCLUDED</span><span>COD ONLY</span></div><div className="live-price"><span>GST INCLUDED WHERE APPLICABLE</span><strong>₹{priceFor(selected, selectedSize)}</strong></div><button className="button button-black full" onClick={addToCart}>ADD TO CART <ArrowRight size={17} /></button></div></div></div>}
+    {cartOpen && <div className="cart-drawer-wrap" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(event) => event.stopPropagation()}><div className="drawer-head"><span>YOUR CART ({cart.reduce((total, item) => total + item.quantity, 0)})</span><button onClick={() => setCartOpen(false)} aria-label="Close cart"><X /></button></div>{cart.length === 0 ? <div className="empty-cart"><span className="cart-face">EMPTY / FOR NOW</span><h2>the cart is<br /><em>currently unemployed.</em></h2><button className="button button-black" onClick={() => setCartOpen(false)}>BACK TO SHOP <ArrowRight size={16} /></button></div> : <><div className="cart-items">{cart.map((item, index) => { const garment = findGarment(item.garmentId); const variant = garment.variants.find((entry) => entry.id === item.variantId) ?? garment.variants[0]; const meme = findMeme(item.memeId); return <div className="cart-item" key={`${item.garmentId}-${item.variantId}-${item.size}-${item.memeId}`}><div className="cart-thumb" style={{ background: variant.hex }}><span>{meme?.artwork.split(' ')[0] ?? 'PLAIN'}</span></div><div className="cart-item-copy"><b>{garment.name}</b><small>{variant.color} / {item.size} / {meme?.name ?? 'plain'}</small><div className="qty"><button onClick={() => changeQuantity(index, -1)} aria-label="Decrease quantity">−</button><span>{item.quantity}</span><button onClick={() => changeQuantity(index, 1)} aria-label="Increase quantity">+</button></div></div><strong>₹{priceFor(garment, item.size) * item.quantity}</strong></div>})}</div><div className="cart-summary"><div><span>SHIPPING</span><b>INCLUDED</b></div><div><span>PAYMENT</span><b>COD ONLY</b></div><div className="cart-total"><span>TOTAL</span><b>₹{cartTotal}</b></div><button className="button button-yellow full" onClick={() => setCheckoutOpen(true)}>CHECKOUT COD <ArrowRight size={16} /></button></div></>}</aside></div>}
+    {checkoutOpen && <div className="modal-backdrop" onClick={() => setCheckoutOpen(false)}><div className="checkout-panel" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setCheckoutOpen(false)} aria-label="Close checkout"><X /></button>{orderPlaced ? <div className="order-success"><Check size={42} /><h2>order request received.</h2><p>Your COD order has been recorded in this session. Fulfillment APIs are intentionally not connected yet.</p><a className="button button-black" href="/track">VIEW TRACKING</a></div> : <form onSubmit={(event) => { event.preventDefault(); setOrderPlaced(true) }}><span className="eyebrow">COD CHECKOUT</span><h2>your details.<br /><em>no weirdness.</em></h2><p>Cash on Delivery only. Shipping included. We will confirm your order details before fulfillment.</p><div className="checkout-fields"><label>Name<input required name="name" /></label><label>Phone<input required name="phone" inputMode="tel" /></label><label>Email<input required name="email" type="email" /></label><label>Address<input required name="address" /></label><label>City<input required name="city" /></label><label>State<input required name="state" /></label><label>Pincode<input required name="pincode" inputMode="numeric" /></label></div><button className="button button-black full" type="submit">PLACE COD ORDER / ₹{cartTotal} <ArrowRight size={16} /></button></form>}</div></div>}
   </main>
 }
