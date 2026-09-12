@@ -1,0 +1,3 @@
+import Link from 'next/link'
+
+export default function SupportPage() { return <main className="policy-page"><Link className="logo" href="/">hi lol<span>.</span></Link><span className="eyebrow">SUPPORT / HUMANS BEHIND THE MEMES</span><h1>Need help?</h1><p className="policy-lede">Talk to the humans behind the memes.</p><div className="support-grid">{['ORDER','PAYMENT','DELIVERY','SIZE','PRODUCT','DAMAGED ITEM','REFUND','OTHER'].map((item) => <a href="mailto:configured-support-email" key={item}><b>{item}</b><span>→</span></a>)}</div><p className="policy-note">Support email is configured by the HILOL team. Include your order ID where relevant so we can find you faster.</p></main> }
