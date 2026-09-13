@@ -3,7 +3,7 @@
 @import 'shadcn/tailwind.css';
 
 @theme inline { --color-background: var(--paper); --color-foreground: var(--ink); --color-border: var(--ink); --color-ring: var(--yellow); --font-sans: var(--body); }
-:root { --paper:#f7f6f1; --ink:#090909; --yellow:#ffe600; --muted:#747474; --line:#090909; --body:"Helvetica Neue", Helvetica, Arial, sans-serif; --display:"Arial Black", "Helvetica Neue", Arial, sans-serif; color-scheme:light; }
+:root { --paper:#f7f6f1; --ink:#090909; --yellow:#ffe600; --muted:#747474; --line:#090909; --body:"Helvetica Neue", Helvetica, Arial, sans-serif; --display:Impact, "Arial Black", "Helvetica Neue", sans-serif; color-scheme:light; }
 * { box-sizing:border-box; border-color:var(--line); }\nhtml,body { width:100%; max-width:100%; }\nimg,svg,video { max-width:100%; }\nbutton,a,input,textarea { min-width:0; }\n.site-shell { width:100%; min-width:0; }\n.product-info h3,.modal-content h2,.policy-page h1,.policy-page h2 { overflow-wrap:anywhere; }
 html { scroll-behavior:smooth; }
 body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--body); }
