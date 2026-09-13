@@ -1,3 +1,4 @@
+import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
@@ -5,7 +6,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'hi lol. — wear your humor.',
   description: 'Indian meme streetwear for people who are chronically online.',
-  generator: 'hi lol.',
+  generator: 'HILOL',
 }
 
 export const viewport: Viewport = {
@@ -17,5 +18,5 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
+  return <html lang="en"><body><ClerkProvider>{children}{process.env.NODE_ENV === 'production' && <Analytics />}</ClerkProvider></body></html>
 }
