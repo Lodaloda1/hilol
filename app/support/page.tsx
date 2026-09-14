@@ -21,9 +21,9 @@ export default function SupportPage() {
 
   return <main className="policy-page support-page">
     <Link className="logo" href="#top"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-9F22B585-1kqlezpaxC4jw8agJdCKAv0KH87Ucf.jpeg" alt="HILOL — wear your humor" /></Link>
-    <span className="eyebrow">SUPPORT / HUMANS BEHIND THE MEMES</span>
+    <span className="eyebrow">SUPPORT / HUMAN HELP</span>
     <h1>Need help?</h1>
-    <p className="policy-lede">Tell us what went sideways. We’ll route it to the right human.</p>
+    <p className="policy-lede">Choose a category, add your order details if relevant, and tell us what happened.</p>
     <div className="support-grid">{categories.map((item) => <button className={category === item ? 'is-selected' : ''} onClick={() => setCategory(item)} key={item}><b>{item}</b><span>→</span></button>)}</div>
     <form className="support-form" onSubmit={submit}>
       <input type="hidden" name="category" value={category} />
