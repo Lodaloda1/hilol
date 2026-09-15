@@ -69,11 +69,7 @@ export default function Page() {
   useEffect(() => {
     if (typeof window === 'undefined') return
     window.history.scrollRestoration = 'manual'
-    const saved = window.sessionStorage.getItem('hilol-scroll-y')
-    if (saved) window.requestAnimationFrame(() => window.scrollTo(0, Number(saved)))
-    const save = () => window.sessionStorage.setItem('hilol-scroll-y', String(window.scrollY))
-    window.addEventListener('pagehide', save)
-    return () => window.removeEventListener('pagehide', save)
+    if (!window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [])
   const selectedVariant = selected?.variants.find((variant) => variant.id === selectedVariantId) ?? selected?.variants[0]
   const selectedMeme = findMeme(selectedMemeId)
