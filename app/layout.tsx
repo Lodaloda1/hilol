@@ -7,7 +7,7 @@ import './globals.css'
 const displayFont = Anton({
   variable: '--font-hilol-display',
   weight: '400',
-  display: 'swap',
+  display: 'optional',
   preload: true,
 })
 
