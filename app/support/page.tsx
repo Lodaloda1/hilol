@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { FormEvent, useState } from 'react'
+import { InstantBack } from '@/components/instant-back'
 
 const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'hilol.support@gmail.com'
 const categories = ['ORDER', 'PAYMENT', 'DELIVERY', 'SIZE & FIT', 'PRODUCT', 'RETURNS & REFUNDS', 'OTHER']
@@ -21,7 +22,7 @@ export default function SupportPage() {
 
   return <main className="policy-page support-page">
     <Link className="logo" href="#top"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-9F22B585-1kqlezpaxC4jw8agJdCKAv0KH87Ucf.jpeg" alt="HILOL — wear your humor" /></Link>
-    <span className="eyebrow">SUPPORT / HUMAN HELP</span>
+    <InstantBack /><span className="eyebrow">SUPPORT / HUMAN HELP</span>
     <h1>Need help?</h1>
     <p className="policy-lede">Choose a category, add your order details if relevant, and tell us what happened.</p>
     <div className="support-grid">{categories.map((item) => <button className={category === item ? 'is-selected' : ''} onClick={() => setCategory(item)} key={item}><b>{item}</b><span>→</span></button>)}</div>

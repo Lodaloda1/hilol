@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { InstantBack } from '@/components/instant-back'
 
 const sections = [
   ['1. Acceptance', 'These Terms govern your use of the HILOL website and purchases from HILOL. By using the site, you agree to them.'],
@@ -11,4 +12,4 @@ const sections = [
   ['8. Governing law', 'These Terms are governed by the laws of India. Courts in India will have jurisdiction over disputes, subject to applicable consumer protections.'],
 ]
 
-export default function TermsPage() { return <main className="policy-page legal-page"><Link className="logo" href="/"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-9F22B585-1kqlezpaxC4jw8agJdCKAv0KH87Ucf.jpeg" alt="HILOL — wear your humor" /></Link><Link className="policy-back" href="/">← Back</Link><span className="eyebrow">LEGAL / TERMS</span><h1>TERMS OF<br />SERVICE.</h1><p className="policy-lede">Wear your humor responsibly. Last updated: 2026.</p>{sections.map(([title, body]) => <section key={title}><h2>{title}</h2><p>{body}</p></section>)}</main> }
+export default function TermsPage() { return <main className="policy-page legal-page"><Link className="logo" href="/"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-9F22B585-1kqlezpaxC4jw8agJdCKAv0KH87Ucf.jpeg" alt="HILOL — wear your humor" /></Link><InstantBack /><span className="eyebrow">LEGAL / TERMS</span><h1>TERMS OF<br />SERVICE.</h1><p className="policy-lede">Wear your humor responsibly. Last updated: 2026.</p>{sections.map(([title, body]) => <section key={title}><h2>{title}</h2><p>{body}</p></section>)}</main> }

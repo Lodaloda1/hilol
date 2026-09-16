@@ -68,12 +68,7 @@ export default function Page() {
   useEffect(() => { if (cartReady) window.localStorage.setItem('hilol-cart', JSON.stringify(cart)) }, [cart, cartReady])
   useEffect(() => {
     if (typeof window === 'undefined') return
-    window.history.scrollRestoration = 'manual'
-    if (!window.location.hash) {
-      document.documentElement.scrollTop = 0
-      document.body.scrollTop = 0
-      window.scrollTo(0, 0)
-    }
+    window.history.scrollRestoration = 'auto'
   }, [])
   const selectedVariant = selected?.variants.find((variant) => variant.id === selectedVariantId) ?? selected?.variants[0]
   const selectedMeme = findMeme(selectedMemeId)
