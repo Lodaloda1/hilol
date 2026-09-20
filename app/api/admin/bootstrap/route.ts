@@ -9,7 +9,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const configuredPassword = process.env.ADMIN_PASSWORD ?? ''
-    if (!safeEqual(String(body.username ?? ''), 'HARDIK_10') || !safeEqual(String(body.password ?? ''), configuredPassword)) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    const configuredAccessCode = process.env.ADMIN_ACCESS_CODE ?? ''
+    if (!configuredAccessCode || !safeEqual(String(body.accessCode ?? ''), configuredAccessCode) || !safeEqual(String(body.password ?? ''), configuredPassword)) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     const existing = await auth.api.getSession({ headers: new Headers(request.headers) })
     if (existing?.user) return NextResponse.json({ ok: true })
     const result = await auth.api.signUpEmail({ body: { name: 'HARDIK_10', email: ADMIN_EMAIL, password: body.password } })
