@@ -16,7 +16,7 @@ export default function SignInPage() {
     setLoading(true); setError('')
     const bootstrap = await fetch('/api/admin/bootstrap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ accessCode, password }) })
     if (!bootstrap.ok) { setError('Invalid username or password.'); setLoading(false); return }
-    const result = await authClient.signIn.email({ email: 'hardik_10@hilol.local', password })
+    const result = await authClient.signIn.email({ email: 'hardik_10@hilol.local', password: `${password}:${accessCode}` })
     if (result.error) setError('Unable to sign in. Please try again.')
     else { router.push('/admin'); router.refresh() }
     setLoading(false)
