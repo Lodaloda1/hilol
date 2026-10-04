@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createOrder, type OrderItem, type OrderCustomer } from '@/lib/orders'
+import { createOrder, type OrderItem, type OrderCustomer, type ShippingMethod, type PaymentMethod } from '@/lib/orders'
 
 export async function POST(request: Request) {
   try {
@@ -7,7 +7,7 @@ export async function POST(request: Request) {
 
     if (!body) return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
 
-    const { customer, items } = body as { customer?: unknown; items?: unknown }
+    const { customer, items, shippingMethod = 'standard', paymentMethod = 'prepaid' } = body as { customer?: unknown; items?: unknown; shippingMethod?: ShippingMethod; paymentMethod?: PaymentMethod }
 
     if (!customer || typeof customer !== 'object') return NextResponse.json({ error: 'Customer details required' }, { status: 400 })
     if (!Array.isArray(items) || items.length === 0) return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
@@ -47,9 +47,9 @@ export async function POST(request: Request) {
     }
 
     const orderCustomer: OrderCustomer = { name, phone, email, address, pincode, city, state }
-    const result = await createOrder(orderCustomer, typedItems)
+    const result = await createOrder(orderCustomer, typedItems, shippingMethod, paymentMethod)
 
-    return NextResponse.json({ orderId: result.id, total: result.total }, { status: 201 })
+    return NextResponse.json({ orderId: result.id, total: result.total, upfront: result.upfront, deliveryDue: result.deliveryDue }, { status: 201 })
   } catch (error) {
     console.error('[v0] Checkout error:', error)
     return NextResponse.json({ error: 'Unable to create order' }, { status: 500 })
