@@ -1,3 +1,4 @@
-export default function CancellationPage() {
-  return <main className="policy-page legal-page"><a className="logo" href="/">hi lol<span>.</span></a><a className="policy-back" href="/">← Back</a><p className="eyebrow">POLICY / CANCELLATION</p><h1>cancel.</h1><p className="policy-lede">Changed your mind? You have 6 hours after placing your order to request cancellation.</p><section><h2>Six-hour window</h2><p>Cancellations can be requested within 6 hours of placing your order. After that window, your made-to-order item may already be in production or fulfillment, so cancellation may no longer be possible.</p></section><section><h2>How to request</h2><p>Contact support with your order details as soon as possible. A request is not confirmed until HILOL confirms it.</p></section><section><h2>Review before launch</h2><p>These policies are a general business draft and should be reviewed by a qualified legal professional before launch.</p></section><a className="button button-black" href="/">BACK TO HILOL</a></main>
-}
+import { LegalPage } from '@/components/legal-page'
+import { legalContent } from '@/lib/legal-content'
+
+export default function CancellationPage() { const content = legalContent.cancellation; return <LegalPage {...content} /> }

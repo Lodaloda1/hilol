@@ -1,9 +1,10 @@
 import Link from 'next/link'
+import { InstantBack } from '@/components/instant-back'
 
 export default function AboutPage() {
   return <main className="policy-page about-page">
     <Link className="logo" href="/"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-9F22B585-1kqlezpaxC4jw8agJdCKAv0KH87Ucf.jpeg" alt="HILOL — wear your humor" /></Link>
-    <Link className="policy-back" href="/">← Back</Link>
+    <InstantBack />
     <span className="eyebrow">ABOUT / HI LOL</span>
     <h1>wear your<br /><em>humor.</em></h1>
     <p className="policy-lede">HILOL makes premium streetwear for people whose camera roll has context they cannot explain.</p>
