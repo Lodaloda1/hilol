@@ -1,4 +1,4 @@
-import Link from 'next/link'
-import { InstantBack } from '@/components/instant-back'
+import { LegalPage } from '@/components/legal-page'
+import { legalContent } from '@/lib/legal-content'
 
-export default function ShippingPage() { return <main className="policy-page legal-page"><Link className="logo" href="/"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-9F22B585-1kqlezpaxC4jw8agJdCKAv0KH87Ucf.jpeg" alt="HILOL — wear your humor" /></Link><InstantBack /><p className="eyebrow">POLICY / SHIPPING</p><h1>SHIPPING.</h1><p className="policy-lede">Standard delivery is included. Express delivery is optional at checkout.</p><section><h2>Standard delivery</h2><p>Delhivery Surface is included with an estimated delivery time of 4–5 days. Remote locations may take longer depending on courier serviceability.</p></section><section><h2>Express delivery</h2><p>BlueDart Express Air is an optional ₹40 upgrade and may arrive approximately 1–2 days faster than Standard delivery. Delivery dates are estimates, not guarantees.</p></section><section><h2>Tracking</h2><p>Tracking details are shared when available. Please ensure your address and phone number are accurate at checkout.</p></section><section><h2>Lost or undelivered orders</h2><p>Contact Support if an order does not arrive. We will work with the courier and arrange the applicable remedy under the Refunds policy.</p></section></main> }
+export default function ShippingPage() { const content = legalContent.shipping; return <LegalPage {...content} /> }
