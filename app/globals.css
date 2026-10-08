@@ -3,17 +3,17 @@
 @import 'shadcn/tailwind.css';
 
 @theme inline { --color-background: var(--paper); --color-foreground: var(--ink); --color-border: var(--ink); --color-ring: var(--yellow); --font-sans: var(--body); }
-:root { --paper:#f7f6f1; --ink:#090909; --yellow:#ffe600; --muted:#747474; --line:#090909; --body:"Helvetica Neue", Helvetica, Arial, sans-serif; --display:var(--font-hilol-display), sans-serif; color-scheme:light; }
+:root { --paper:#f7f6f1; --ink:#090909; --yellow:#ffe600; --muted:#747474; --line:#090909; --body:"Helvetica Neue", Helvetica, Arial, sans-serif; --display:var(--font-hilol-display), sans-serif; color-scheme:light; forced-color-adjust:none; } @media (prefers-color-scheme: dark) { :root { color-scheme:light; --paper:#f7f6f1; --ink:#090909; --yellow:#ffe600; --muted:#747474; --line:#090909; } }
 * { box-sizing:border-box; border-color:var(--line); }
-html,body { width:100%; max-width:100%; }
-img,svg,video { max-width:100%; }
+html,body { width:100%; max-width:100%; color-scheme:only light; background:#f7f6f1; forced-color-adjust:none; }
+img,svg,video { max-width:100%; forced-color-adjust:none; }
 button,a,input,textarea { min-width:0; }
 .site-shell { width:100%; min-width:0; }
 .product-info h3,.modal-content h2,.policy-page h1,.policy-page h2 { overflow-wrap:anywhere; }
 html { scroll-behavior:auto; }
-body { --display:var(--font-hilol-display); margin:0; background:var(--paper); color:var(--ink); font-family:var(--body); }
+body { --display:var(--font-hilol-display); margin:0; background-color:#f7f6f1; color:#090909; font-family:var(--body); -webkit-text-fill-color:#090909; } .site-shell,.size-guide-page,.policy-page { background-color:#f7f6f1; color:#090909; }
 a { color:inherit; text-decoration:none; }
-button,input { font:inherit; color:inherit; }
+button,input,textarea,select { font:inherit; color:inherit; color-scheme:only light; forced-color-adjust:none; }
 button { cursor:pointer; -webkit-tap-highlight-color:transparent; } button:active { transform:scale(.98); } a { -webkit-tap-highlight-color:transparent; } @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; } }
 button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #2455ff; outline-offset:3px; }
 .site-shell { overflow:hidden; background:var(--paper); }
