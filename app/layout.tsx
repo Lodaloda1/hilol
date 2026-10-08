@@ -26,5 +26,5 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body className={displayFont.variable}><ClerkProvider>{children}{process.env.NODE_ENV === 'production' && <Analytics />}</ClerkProvider></body></html>
+  return <html lang="en"><head><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /></head><body className={displayFont.variable}><ClerkProvider>{children}{process.env.NODE_ENV === 'production' && <Analytics />}</ClerkProvider></body></html>
 }
