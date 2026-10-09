@@ -16,7 +16,7 @@ export const legalContent = {
     ] as LegalSection[]
   },
   privacy: {
-    eyebrow: 'LEGAL / PRIVACY', title: 'PRIVACY, WITHOUT THE WEIRDNESS.', lede: 'At HILOL, we collect and use information mainly to get your order to you and help when something goes wrong. Last updated: 2026.', sections: [
+    eyebrow: 'LEGAL / PRIVACY', title: 'PRIVACY, WITHOUT THE WEIRDNESS.', lede: 'At HILOL, we collect and use information mainly to do one thing: get your order to you and help when something goes wrong. This Privacy Policy explains what information we collect, why we use it, when it may be shared, and the choices available to you. Last updated: 2026.', sections: [
       ['What we collect', 'Depending on how you use HILOL, we may collect your name, phone number, email address, shipping and billing information, order details including products, sizes, colours, quantities and status, payment transaction information, support messages, account information, and information voluntarily provided through forms or reviews.'],
       ['Why we use it', 'We use information to process and fulfill orders, communicate about orders, arrange printing, packaging and delivery, provide support, handle cancellations and refunds, verify transactions, prevent fraud, improve the website, communicate service information, comply with legal requirements, and protect HILOL and its customers.'],
       ['Payments', 'Payments may be processed through Cashfree or another available provider. HILOL does not intentionally store full card numbers, card security codes, UPI PINs, banking passwords, or payment passwords. We may receive payment status, transaction identifiers, and related order information.'],
@@ -28,7 +28,7 @@ export const legalContent = {
     ] as LegalSection[]
   },
   shipping: {
-    eyebrow: 'POLICY / SHIPPING', title: 'SHIPPING. GET IT. WEAR IT.', lede: 'Standard delivery is included on eligible orders, with an optional express upgrade at checkout. Last updated: 2026.', sections: [
+    eyebrow: 'POLICY / SHIPPING', title: 'SHIPPING. GET IT. WEAR IT.', lede: 'We offer standard delivery on all eligible orders, with an optional express upgrade available at checkout. Delivery times are estimates and can vary depending on location, courier serviceability, weather, holidays, and other circumstances outside HILOL’s reasonable control. Last updated: 2026.', sections: [
       ['Standard delivery', 'Standard delivery is included in the displayed product price for eligible orders. Orders use Delhivery Surface. Estimated delivery is 4–5 days after dispatch, depending on destination and serviceability. Remote or restricted locations may take longer.'],
       ['Express delivery', 'Express is an optional ₹40 upgrade where serviceability permits. Express orders use BlueDart Express Air and may arrive approximately 1–2 days faster than Standard. Selecting Express does not guarantee a particular date or time.'],
       ['Processing and tracking', 'Delivery estimates refer to the courier period and do not necessarily begin when an order is placed. Processing, production, packing, and courier pickup may take additional time. Tracking is provided when available and may take time to activate.'],
@@ -49,7 +49,7 @@ export const legalContent = {
       ['Courier damage and lost orders', 'Document damaged packages and contact Support. If an order has not arrived within a reasonable period after the expected delivery window, contact Support so HILOL can investigate with the delivery provider.'],
       ['Refunds and return shipping', 'Replacement or reprint is the normal remedy for verified made-to-order issues. Where a monetary refund is required or appropriate under law or the circumstances, it will be processed through the applicable payment method. HILOL may arrange or cover return shipping for verified HILOL errors.'],
       ['How to make a claim', 'Contact Support within 24 hours for damaged, defective, incorrectly printed, wrong, or missing items. Include your order number, contact details, issue description, photographs, and an uncut video if requested. Keep the product and packaging until review.'],
-      ['Applicable law and support', 'Claims are reviewed individually. This policy is intended to operate consistently with applicable Indian consumer-protection laws, and mandatory rights remain unaffected.'],
+      ['No change-of-mind returns', 'Because products are made to order specifically for customers, we do not accept ordinary returns simply because you do not like the product, changed your mind, ordered the wrong size, ordered the wrong colour, selected the wrong design, or no longer want it. Check the size chart before ordering.'], ['Applicable law and support', 'Claims are reviewed individually. This policy is intended to operate consistently with applicable Indian consumer-protection laws. Nothing in this policy removes or restricts a consumer right or remedy that cannot legally be excluded. Where applicable law provides a mandatory remedy that differs from this policy, the applicable law prevails. For support, use the Support link and include your order number.'],
     ] as LegalSection[]
   },
   cancellation: {
@@ -61,7 +61,7 @@ export const legalContent = {
       ['Prepaid orders', 'For prepaid orders, an eligible cancellation confirmed within the 60-minute window will be processed for the applicable refund. Processing times may vary by payment provider or financial institution.'],
       ['After the cancellation window', 'Once the window has passed or printing has begun, HILOL generally cannot cancel or modify an order. Contact Support immediately if you notice an error, but changes are not guaranteed.'],
       ['HILOL cancellations and refused delivery', 'HILOL may cancel for availability, technical or pricing errors, unusable information, an unserviceable location, payment problems, suspected fraud, or circumstances beyond reasonable control. Refusing or ignoring delivery after fulfillment or transit does not count as cancellation.'],
-      ['Applicable law', 'This policy is intended to operate consistently with applicable Indian consumer-protection laws. Mandatory rights remain unaffected.'],
+      ['Refusing delivery is not cancellation', 'Refusing or ignoring delivery after an order has entered fulfillment or transit does not count as a cancellation request. Contact HILOL Support within the 60-minute cancellation window. Failed deliveries, refused COD orders, and returned shipments may be handled under applicable HILOL policies.'], ['Applicable law', 'This policy is intended to operate consistently with applicable Indian consumer-protection laws. Nothing in this policy removes or restricts a consumer right or remedy that cannot legally be excluded.'], ['Need to cancel?', 'Do not wait. Contact HILOL Support as soon as possible after placing your order. Cancellation is complete only when HILOL confirms it.'],
     ] as LegalSection[]
   }
 } as const
