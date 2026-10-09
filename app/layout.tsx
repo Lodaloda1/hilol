@@ -9,6 +9,8 @@ const displayFont = Anton({
   weight: '400',
   display: 'swap',
   preload: true,
+  fallback: ['Arial Narrow', 'Arial', 'sans-serif'],
+  adjustFontFallback: false,
 })
 
 export const metadata: Metadata = {
