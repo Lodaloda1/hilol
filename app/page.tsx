@@ -37,6 +37,23 @@ function ProductVisual({ garment, variant, meme, large = false }: { garment: Gar
 export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  useEffect(() => {
+    if (!menuOpen) return
+    const scrollY = window.scrollY
+    const body = document.body
+    const previous = { position: body.style.position, top: body.style.top, width: body.style.width, overflow: body.style.overflow }
+    body.style.position = 'fixed'
+    body.style.top = `-${scrollY}px`
+    body.style.width = '100%'
+    body.style.overflow = 'hidden'
+    return () => {
+      body.style.position = previous.position
+      body.style.top = previous.top
+      body.style.width = previous.width
+      body.style.overflow = previous.overflow
+      window.scrollTo(0, scrollY)
+    }
+  }, [menuOpen])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedVariantId, setSelectedVariantId] = useState('')
   const [selectedMemeId, setSelectedMemeId] = useState<string | undefined>(memes[0].id)
@@ -70,7 +87,7 @@ export default function Page() {
   const visibleGarments = garments.filter((garment) => shopFilter === 'ALL' || shopFilter === 'OVERSIZED' && ['normal-oversized-tee', 'premium-oversized-tee', 'premium-acid-wash-oversized-tee'].includes(garment.id))
   const faqQuestions = ['Do you offer COD?', 'Is express delivery included?', 'What sizes are available?', 'How do I know which fit to choose?', 'What makes HILOL garments different?', 'How durable are the prints?', 'Can I cancel my order?', 'Can I return my order if I change my mind?', 'What if something arrives wrong?', 'Where are HILOL garments made?']
   return <main id="top" className="site-shell"><header className="site-nav"><button className="menu-button" aria-label="Open menu" onClick={() => setMenuOpen(true)}><Menu size={22} /></button><a className="logo" href="#top"><img src={logoUrl} alt="hi lol wear your humor" /></a><nav className="desktop-nav">{['SHOP', 'OVERSIZED', 'ABOUT'].map((item) => item === 'ABOUT' ? <a key={item} href="/about">{item}</a> : <a key={item} href="#shop" onClick={(event) => { event.preventDefault(); goToShop(item) }}>{item}</a>)}<a href="/size-guide">SIZE GUIDE</a></nav><div className="nav-actions"><a href="/sign-in" className="track-link">SIGN IN</a><a href="/track" className="track-link">TRACK ORDER</a><button className="cart-button" onClick={() => setCartOpen(true)} aria-label="Open cart"><ShoppingBag size={19} /><span>{cart.reduce((total, item) => total + item.quantity, 0)}</span></button></div></header>
-  <div className={`mobile-menu ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}><button className="close-button" onClick={() => setMenuOpen(false)} aria-label="Close menu"><X /></button><span className="menu-kicker">THE MENU, BUT MAKE IT LOUD</span>{['SHOP', 'OVERSIZED', 'ABOUT'].map((item, index) => item === 'ABOUT' ? <a key={item} href="/about" onClick={() => setMenuOpen(false)}>{item}<ArrowRight /></a> : <a key={item} href="#shop" onClick={(event) => { event.preventDefault(); setMenuOpen(false); goToShop(item) }}>{item}<ArrowRight /></a>)}<a href="/size-guide" onClick={() => setMenuOpen(false)}>SIZE GUIDE <ArrowRight /></a><a href="/support" onClick={() => setMenuOpen(false)}>HELP <ArrowRight /></a><a className="menu-track" href="/track">TRACK ORDER <ArrowRight /></a></div>
+  <div className={`mobile-menu ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}><button className="close-button" onClick={() => setMenuOpen(false)} aria-label="Close menu"><X /></button><span className="menu-kicker">THE MENU, BUT MAKE IT LOUD</span>{['SHOP', 'OVERSIZED', 'ABOUT'].map((item, index) => item === 'ABOUT' ? <a key={item} href="/about" onClick={() => setMenuOpen(false)}>{item}<ArrowRight /></a> : <a key={item} href="#shop" onClick={(event) => { event.preventDefault(); setMenuOpen(false); goToShop(item) }}>{item}<ArrowRight /></a>)}<a href="/size-guide" onClick={() => setMenuOpen(false)}>SIZE GUIDE <ArrowRight /></a><a href="/support" onClick={() => setMenuOpen(false)}>HELP <ArrowRight /></a><a className="menu-track" href="/track" onClick={() => setMenuOpen(false)}>TRACK ORDER <ArrowRight /></a></div>
   <section className="hero-section"><div className="hero-copy"><span className="sticker sticker-top">INDIAN MEME WEAR</span><h1>hi<br /><span>lol</span></h1><p className="hero-tagline">wear your humor</p><p className="hero-sub">you were going to scroll anyway. make it a fit.</p><div className="hero-actions"><a className="button button-black" href="#shop">SHOP THE DROP <ArrowRight size={17} /></a><a className="scroll-link" href="#brainrot">SCROLL THE BRAINROT <ArrowDown size={16} /></a></div></div><div className="hero-art"><img className="hero-logo-art" src={logoUrl} alt="hi lol. wear your humor" /><div className="hero-shirt"><div className="tee-neck" /><div className="tee-print">BRB<br /><small>BEING<br />ICONIC</small></div></div><span className="sticker sticker-corner">100%<br />UNSERIOUS</span></div><div className="hero-bottom"><span>SCROLL IF YOU DARE</span><span>↓</span><span>EST. 2026 / INDIA</span></div></section>
   <div className="static-strip">WEAR YOUR HUMOR <span>+</span> WEAR YOUR HUMOR <span>+</span> WEAR YOUR HUMOR</div>
   <section id="brainrot" className="brainrot-section section-pad"><div className="section-head"><span className="eyebrow">THE FEED</span><h2>SHOP THE<br /><em>BRAINROT</em></h2><p>Pick your current level of internet damage. No judgment. The slider is already judging.</p></div><div className="level-switcher">{(['COMMON BALL KNOWLEDGE', 'MID BALL KNOWLEDGE', 'ELITE BALL KNOWLEDGE'] as MemeTier[]).map((item, index) => <button className={level === item ? 'active' : ''} key={item} onClick={() => setLevel(item)}><span className="tier-name">{item}</span><small>{index === 0 ? 'you know this one. don’t lie.' : index === 1 ? 'ts has lore. unfortunately.' : 'gng, the feed owns you.'}</small></button>)}</div><div className="meme-showcase" aria-live="polite">{memes.filter((meme) => meme.tier === level).map((meme) => <button type="button" key={meme.id} className="meme-showcase-card" onClick={() => { setSelectedMemeId(meme.id); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }) }}><span>{meme.tier}</span><strong>{meme.artwork}</strong><small>{meme.name}</small></button>)}</div></section>
