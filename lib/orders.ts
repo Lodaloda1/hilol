@@ -42,6 +42,8 @@ export const stateTransitions: Record<OrderStatus, OrderStatus[]> = {
 
 export async function createOrder(customer: OrderCustomer, items: OrderItem[], shippingMethod: ShippingMethod = 'standard', paymentMethod: PaymentMethod = 'prepaid'): Promise<{ id: string; total: number; upfront: number; deliveryDue: number }> {
   if (!items.length) throw new Error('Order must contain at least one item')
+  const aggregateQuantity = items.reduce((sum, item) => sum + Math.floor(Number(item.quantity) || 0), 0)
+  if (aggregateQuantity <= 0 || aggregateQuantity > 100) throw new Error('Order quantity limit exceeded')
   if (!customer.name || !customer.phone || !customer.email || !customer.address || !customer.pincode || !customer.city || !customer.state) throw new Error('All customer fields are required')
 
   if (!['standard', 'express'].includes(shippingMethod) || !['prepaid', 'cod'].includes(paymentMethod)) throw new Error('Invalid checkout options')
@@ -63,7 +65,7 @@ export async function createOrder(customer: OrderCustomer, items: OrderItem[], s
       id: orderId,
       customerName: customer.name,
       customerEmail: customer.email,
-      items: { customer, items: pricedItems, shippingMethod, paymentMethod, expressFee, codFee, upfront, deliveryDue },
+      items: { customer, items: pricedItems, shippingMethod, paymentMethod, expressFee, codFee, upfront, deliveryDue, fulfillment: { provider: 'nexelprint', environment: 'sandbox', submitted: false, externalOrderId: null } },
       total,
       status: 'pending',
       createdAt: now,
