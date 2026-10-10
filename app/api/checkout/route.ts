@@ -14,16 +14,20 @@ export async function POST(request: Request) {
 
     const typedCustomer = customer as Record<string, unknown>
     const name = String(typedCustomer.name ?? '')
-    const phone = String(typedCustomer.phone ?? '')
-    const email = String(typedCustomer.email ?? '')
+    const phone = String(typedCustomer.phone ?? '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '')
+    const email = String(typedCustomer.email ?? '').trim().toLowerCase()
+    const confirmPhone = String(typedCustomer.confirmPhone ?? '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '')
+    const confirmEmail = String(typedCustomer.confirmEmail ?? '').trim().toLowerCase()
     const address = String(typedCustomer.address ?? '')
     const pincode = String(typedCustomer.pincode ?? '')
     const city = String(typedCustomer.city ?? '')
     const state = String(typedCustomer.state ?? '')
 
-    if (!name || !phone || !email || !address || !pincode || !city || !state) return NextResponse.json({ error: 'All customer fields are required' }, { status: 400 })
+    if (!name || !phone || !confirmPhone || !email || !confirmEmail || !address || !pincode || !city || !state) return NextResponse.json({ error: 'All customer fields are required' }, { status: 400 })
+    if (email !== confirmEmail) return NextResponse.json({ error: 'Emails do not match' }, { status: 400 })
+    if (phone !== confirmPhone) return NextResponse.json({ error: 'Phone numbers do not match' }, { status: 400 })
 
-    if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) return NextResponse.json({ error: 'Invalid phone number' }, { status: 400 })
+    if (!/^\d{10}$/.test(phone)) return NextResponse.json({ error: 'Invalid phone number' }, { status: 400 })
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
     if (!/^\d{6}$/.test(pincode.replace(/\D/g, ''))) return NextResponse.json({ error: 'Invalid pincode' }, { status: 400 })
 
