@@ -1,6 +1,14 @@
 import crypto from 'node:crypto'
 
-const baseUrl = process.env.NEXELPRINT_API_BASE_URL || 'https://api.nexelprint.com'
+export type NexelPrintEnvironment = 'sandbox' | 'live'
+
+function getConfig(environment: NexelPrintEnvironment = 'sandbox') {
+  const baseUrl = environment === 'sandbox' ? process.env.NEXELPRINT_SANDBOX_API_BASE_URL : process.env.NEXELPRINT_LIVE_API_BASE_URL
+  const token = environment === 'sandbox' ? process.env.NEXELPRINT_SANDBOX_API_KEY : process.env.NEXELPRINT_LIVE_API_KEY
+  if (!baseUrl) throw new Error(`NexelPrint ${environment} base URL is not configured`)
+  if (!token) throw new Error(`NexelPrint ${environment} API key is not configured`)
+  return { baseUrl, token }
+}
 
 export type NexelPrintOrder = {
   client_reference_id: string
@@ -10,14 +18,14 @@ export type NexelPrintOrder = {
   branding?: { custom_neck_label: boolean; brand_name_on_awb: string; brand_support_phone: string; brand_packing_slip_message: string }
 }
 
-function authHeaders() {
-  const token = process.env.NEXELPRINT_API_KEY
-  if (!token) throw new Error('NEXELPRINT_API_KEY is not configured')
+function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
 }
 
-export async function createNexelPrintOrder(order: NexelPrintOrder) {
-  const response = await fetch(`${baseUrl}/v1/orders`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(order), cache: 'no-store' })
+export async function createNexelPrintOrder(order: NexelPrintOrder, environment: NexelPrintEnvironment = 'sandbox') {
+  const { baseUrl, token } = getConfig(environment)
+  if (environment === 'live' && process.env.ALLOW_NEXELPRINT_LIVE_ORDERS !== 'true') throw new Error('Live NexelPrint orders are disabled')
+  const response = await fetch(`${baseUrl}/v1/orders`, { method: 'POST', headers: authHeaders(token), body: JSON.stringify(order), cache: 'no-store' })
   const payload = await response.json().catch(() => null)
   if (!response.ok) throw new Error(`NexelPrint order failed (${response.status}): ${JSON.stringify(payload)}`)
   return payload

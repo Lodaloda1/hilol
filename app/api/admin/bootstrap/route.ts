@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { timingSafeEqual } from 'node:crypto'
+import { ADMIN_EMAIL } from '@/lib/admin'
 
 const safeEqual = (left: string, right: string) => { const a = Buffer.from(left); const b = Buffer.from(right); return a.length === b.length && timingSafeEqual(a, b) }
-export const ADMIN_EMAIL = 'hardik_10@hilol.local'
 export const deriveAdminPassword = (password: string, accessCode: string) => `${password}:${accessCode}`
 
 export async function POST(request: Request) {
